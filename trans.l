@@ -9,7 +9,7 @@
 %}
 
 word        ([a-zA-Z_])([a-zA-Z0-9_])+
-string      "{word}"
+string      \"{word}\"
 number      [0-9]+
 
 
@@ -21,7 +21,9 @@ number      [0-9]+
 "and"                  { seen_logical_op = 0; return AND; }
 "or"                   { seen_logical_op = 0; return OR; }
 
-{word}                 { yylval.str = strdup(yytext); return seen_where ? (seen_logical_op ? VALUE : COLUMN) : seen_from ? TABLE : COLUMN; }
+{word}                 { yylval.str = strdup(yytext); return seen_where ? COLUMN : seen_from ? TABLE : COLUMN; }
+{string}               { yylval.str = strdup(yytext); return VALUE; }
+{number}               { yylval.str = strdup(yytext); return VALUE; }
 
 ";"                    { seen_from = 0; return SEMICOLON; }
 ","                    { return COMMA; }
