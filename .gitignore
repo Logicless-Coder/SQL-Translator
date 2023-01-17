@@ -1,0 +1,5 @@
+lex.yy.c
+query.txt
+trans
+trans.tab.c
+trans.tab.h
