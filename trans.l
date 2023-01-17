@@ -21,7 +21,7 @@ number      [0-9]+
 "where"                { seen_where = 1; return WHERE; }
 "and"                  { seen_logical_op = 0; return AND; }
 "or"                   { seen_logical_op = 0; return OR; }
-"join"                 { return JOIN; }
+"join"                 { seen_on = 0; return JOIN; }
 "on"                   { seen_on = 1; return ON; }
 
 {word}                 { yylval.str = strdup(yytext); return (seen_where || seen_on) ? COLUMN : seen_from ? TABLE : COLUMN; }

@@ -3,6 +3,7 @@
   #include <string.h>
   #include <stdarg.h>
   #include <stdlib.h>
+  #include "color-codes.h"
 
   int yylex();
   int yyerror();
@@ -37,7 +38,7 @@
 %%
 
 statement: 
-	SELECT column_list FROM TABLE join_clause where_clause SEMICOLON { printf("$[%s](@[%s](%s %s))", $2, $6, $4, $5); }
+	SELECT column_list FROM TABLE join_clause where_clause SEMICOLON { printf(RED "$[%s]" reset, $2); printf("("); printf(GRN "@[%s]" reset, $6); printf("("); printf(BLU "%s%s" reset, $4, $5); printf("))"); }
 	;
 
 column_list: 
@@ -47,7 +48,7 @@ column_list:
 	;
 
 join_clause:
-  JOIN TABLE ON condition_list            { char *buf = malloc(BUF_SIZE * sizeof(char));  $$ = concat(5, buf, "X[", $4, "] ", $2); }
+  join_clause JOIN TABLE ON condition_list            { char *buf = malloc(BUF_SIZE * sizeof(char));  $$ = concat(6, buf, $1, " X[", $5, "] ", $3); }
   | %empty                                { $$ = ""; }
   ;
 
@@ -64,6 +65,7 @@ condition_list:
 
 condition:
   COLUMN logical_op VALUE                 { $$ = strcat(strcat($1, $2), $3); }
+  | COLUMN logical_op COLUMN              { $$ = strcat(strcat($1, $2), $3); }
   ;
 
 logical_op:
@@ -74,10 +76,6 @@ logical_op:
 
 int main(int argc, char** argv) {
 	yyparse();
-}
-
-void add_column_to_list(char *column) {
-  columns[num_columns++] = column;
 }
 
 int yyerror(char *s) {
