@@ -5,6 +5,7 @@
 
   int seen_from = 0;
   int seen_where = 0;
+  int seen_on = 0;
   int seen_logical_op = 0;
 %}
 
@@ -20,8 +21,10 @@ number      [0-9]+
 "where"                { seen_where = 1; return WHERE; }
 "and"                  { seen_logical_op = 0; return AND; }
 "or"                   { seen_logical_op = 0; return OR; }
+"join"                 { return JOIN; }
+"on"                   { seen_on = 1; return ON; }
 
-{word}                 { yylval.str = strdup(yytext); return seen_where ? COLUMN : seen_from ? TABLE : COLUMN; }
+{word}                 { yylval.str = strdup(yytext); return (seen_where || seen_on) ? COLUMN : seen_from ? TABLE : COLUMN; }
 {string}               { yylval.str = strdup(yytext); return VALUE; }
 {number}               { yylval.str = strdup(yytext); return VALUE; }
 
