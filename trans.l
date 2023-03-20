@@ -11,6 +11,7 @@
 
 word        ([a-zA-Z_])([a-zA-Z0-9_])+
 string      \"{word}\"
+identifier  {word}(\.{word})?
 number      [0-9]+
 
 
@@ -24,7 +25,7 @@ number      [0-9]+
 "join"                 { seen_on = 0; return JOIN; }
 "on"                   { seen_on = 1; return ON; }
 
-{word}                 { yylval.str = strdup(yytext); return (seen_where || seen_on) ? COLUMN : seen_from ? TABLE : COLUMN; }
+{identifier}           { yylval.str = strdup(yytext); return (seen_where || seen_on) ? COLUMN : seen_from ? TABLE : COLUMN; }
 {string}               { yylval.str = strdup(yytext); return VALUE; }
 {number}               { yylval.str = strdup(yytext); return VALUE; }
 
